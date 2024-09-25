@@ -43,14 +43,14 @@ const EmployeeList = () => {
           </Button>
         </Link>
       </div>
-      
-      <div className='flex mb-4'>
+
+      <div className='flex justify-end mb-4'>
         <input
           type="text"
           placeholder="Search by Name"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className='border border-gray-300 rounded-lg p-2 mr-2 w-full'
+          className='border border-gray-300 rounded-lg p-1 mr-2 w-1/4' // Adjusted width to 1/4
         />
         <Button variant="contained" color="primary" onClick={() => setSearchTerm("")}>
           Clear
@@ -92,8 +92,14 @@ const EmployeeList = () => {
                 <td className='border-b border-gray-300 py-4'>
                   {item.course?.[0] || 'N/A'}, {item.course?.[1] || 'N/A'}
                 </td>
-                <td className='border-b border-gray-300 py-4'>{new Date(item.dateCreated).toLocaleDateString() || 'N/A'}</td>
-                <td className='border-b border-gray-300 py-4 flex justify-center space-x-2'>
+                <td className='border-b border-gray-300 py-4'>
+                  {/* Set default to current date if createdAt is not available */}
+                  {item.createdAt ? 
+                    new Date(item.createdAt).toLocaleDateString() : 
+                    new Date().toLocaleDateString()
+                  }
+                </td>
+                <td className='border-b border-gray-300 py-7 flex justify-center space-x-2 mt-2'> {/* Added margin top here */}
                   <Link to={`/edit-employee/${item._id}`}>
                     <Button variant="contained" color="primary">
                       Edit
