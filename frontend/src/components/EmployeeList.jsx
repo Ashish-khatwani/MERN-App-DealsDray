@@ -3,7 +3,6 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-// Getting data from the DB to React
 const EmployeeList = () => {
   const [infoFromDB, setInfoFromDB] = useState([]);
   const [reload, setReload] = useState(false);
@@ -29,55 +28,61 @@ const EmployeeList = () => {
   };
 
   return (
-    <div className='w-screen'>
-      <p>Total Count : {infoFromDB.length}</p>
-      <table>
-        <thead className='border border-black w-screen'>
-          <tr>
-            <th className='px-7 py-2'>Unique Id</th>
-            <th className='px-7 py-2'>Image</th>
-            <th className='px-7 py-2'>Name</th>
-            <th className='px-7 py-2'>Email</th>
-            <th className='px-7 py-2'>Phone</th>
-            <th className='px-7 py-2'>Designation</th>
-            <th className='px-7 py-2'>Gender</th>
-            <th className='px-7 py-2'>Course</th>
-            <th className='px-12 py-2'>Action</th>
-          </tr>
-        </thead>
-        <tbody className='text-center text-[15px]'>
-          {infoFromDB.map((item, index) => (
-            <tr key={item.id || index}> {/* Use index as fallback key */}
-              <td className='border-2 border-green-700'>{index + 1}</td>
-              <td className='border-2 border-green-700'>
-                {item.image ? (
-                  <img src={`backend/Images/${item.image}`} alt={`${item.name}'s profile`} />
-                ) : (
-                  'No Image'
-                )}
-              </td>
-              <td className='border-2 border-green-700'>{item.name || 'N/A'}</td>
-              <td className='border-2 border-green-700'>{item.email || 'N/A'}</td>
-              <td className='border-2 border-green-700'>{item.phone || 'N/A'}</td>
-              <td className='border-2 border-green-700'>{item.designation || 'N/A'}</td>
-              <td className='border-2 border-green-700'>{item.gender || 'N/A'}</td>
-              <td className='border-2 border-green-700'>
-                {item.course?.[0] || 'N/A'}, {item.course?.[1] || 'N/A'}
-              </td>
-              <td className='border-2 border-green-700'>
-                <Link to={`/edit-employee/${item._id}`}>Edit - </Link>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  onClick={() => deleteUser(item._id)}
-                >
-                  Delete
-                </Button>
-              </td>
+    <div className='w-full p-6 bg-gray-100'>
+      <h1 className='text-xl font-semibold mb-4'>Total Employees: {infoFromDB.length}</h1>
+      <div className='overflow-x-auto rounded-lg shadow-lg'>
+        <table className='min-w-full bg-white border border-gray-300'>
+          <thead className='bg-gray-200 text-gray-600'>
+            <tr>
+              <th className='px-4 py-2 border-b'>Unique Id</th>
+              <th className='px-4 py-2 border-b'>Image</th>
+              <th className='px-4 py-2 border-b'>Name</th>
+              <th className='px-4 py-2 border-b'>Email</th>
+              <th className='px-4 py-2 border-b'>Phone</th>
+              <th className='px-4 py-2 border-b'>Designation</th>
+              <th className='px-4 py-2 border-b'>Gender</th>
+              <th className='px-4 py-2 border-b'>Course</th>
+              <th className='px-4 py-2 border-b'>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className='text-center text-gray-700'>
+            {infoFromDB.map((item, index) => (
+              <tr key={item.id || index} className='hover:bg-gray-100 transition duration-200'>
+                <td className='border-b border-gray-300'>{index + 1}</td>
+                <td className='border-b border-gray-300'>
+                  {item.image ? (
+                    <img src={`backend/Images/${item.image}`} alt={`${item.name}'s profile`} className='w-12 h-12 object-cover rounded-full' />
+                  ) : (
+                    'No Image'
+                  )}
+                </td>
+                <td className='border-b border-gray-300'>{item.name || 'N/A'}</td>
+                <td className='border-b border-gray-300'>{item.email || 'N/A'}</td>
+                <td className='border-b border-gray-300'>{item.phone || 'N/A'}</td>
+                <td className='border-b border-gray-300'>{item.designation || 'N/A'}</td>
+                <td className='border-b border-gray-300'>{item.gender || 'N/A'}</td>
+                <td className='border-b border-gray-300'>
+                  {item.course?.[0] || 'N/A'}, {item.course?.[1] || 'N/A'}
+                </td>
+                <td className='border-b border-gray-300 flex justify-center space-x-2'>
+                  <Link to={`/edit-employee/${item._id}`}>
+                    <Button variant="contained" color="primary">
+                      Edit
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => deleteUser(item._id)}
+                  >
+                    Delete
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
