@@ -1,45 +1,44 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const EditEmployee = () => {
-  let [name, setName] = useState("")
-  let [email, setEmail] = useState('')
-  let [phone, setPhone] = useState()
-  let [designation, setDesignation] = useState()
-  let [gender, setGender] = useState()
-  let [courses, setCourses] = useState([])
-  let [image, setImage] = useState()
+  let [name, setName] = useState("");
+  let [email, setEmail] = useState('');
+  let [phone, setPhone] = useState('');
+  let [designation, setDesignation] = useState('');
+  let [gender, setGender] = useState('');
+  let [courses, setCourses] = useState([]);
+  let [image, setImage] = useState(null);
 
+  let idObj = useParams();
+  let navigate = useNavigate();
 
-  let idObj = useParams()
-  let navigate = useNavigate()
   useEffect(() => {
     axios.get(`http://localhost:4001/employee-list/${idObj.ID}`)
-      .then((e) => {
-        setName(e.data.name);
-        setEmail(e.data.email);
-        setPhone(e.data.phone)
-        setDesignation(e.data.designation)
-        setGender(e.data.gender)
-        setCourses(e.data.course)
+      .then((response) => {
+        setName(response.data.name);
+        setEmail(response.data.email);
+        setPhone(response.data.phone);
+        setDesignation(response.data.designation);
+        setGender(response.data.gender);
+        setCourses(response.data.course);
       })
-      .catch(() => { console.log("erro"); })
-  }, [])
+      .catch(() => { console.log("error"); });
+  }, [idObj.ID]);
 
-  // checkBox handling
+  // Checkbox handling
   const handleCheckboxChange = (event) => {
     const { value, checked } = event.target;
     if (checked) {
-      setCourses([...courses, value]);
+      setCourses(prevCourses => [...prevCourses, value]);
     } else {
-      setCourses(courses.filter(course => course !== value));
+      setCourses(prevCourses => prevCourses.filter(course => course !== value));
     }
   };
 
   let formHandle = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     let payload = {
       name: name,
       email: email,
@@ -48,64 +47,120 @@ const EditEmployee = () => {
       designation: designation,
       gender: gender,
       course: courses
-    }
+    };
+
     axios.put(`http://localhost:4001/employee-list/${idObj.ID}`, payload, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     })
-      .then((e) => { alert(e.data); })
-      .catch(() => { console.log("err "); })
-
-    navigate("/employee-list")
-
-  }
+      .then((response) => { 
+        alert(response.data); 
+        navigate("/employee-list");
+      })
+      .catch(() => { console.log("err "); });
+  };
 
   return (
-    <div className=' max-w-[940px]  h-[600px] border-4 border-blue-900 mx-auto relative top-[-90px] shadow-xl scale-75 p-[30px]'>
-      <h1 className='text-center font-bold text-2xl my-3'>Update Employee Data</h1>
-      <div className='border border-red-600 max-w-[300px] mx-auto my-5 p-10'>
-        <input className='bg-white border-2 border-violet-400 text-black my-3 placeholder-black ' placeholder='Enter Full Name' type="text" value={name} onChange={(e) => { setName(e.target.value) }} />
-        <input className='bg-white border-2 border-violet-400 text-black my-3 placeholder-black ' placeholder='Enter Email' type="text" value={email} onChange={(e) => { setEmail(e.target.value) }} />
-        <input className='bg-white border-2 border-violet-400 text-black my-3 placeholder-black ' placeholder='Enter Phone Number' type="text" value={phone} onChange={(e) => { setPhone(e.target.value) }} />
+    <div className='max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-8 mt-10'>
+      <h1 className='text-center font-bold text-2xl mb-6'>Update Employee Data</h1>
+      <form onSubmit={formHandle} className='space-y-4'>
+        <input
+          className='w-full bg-gray-100 border-2 border-gray-300 rounded-lg p-3 placeholder-gray-500'
+          placeholder='Enter Full Name'
+          type="text"
+          value={name}
+          onChange={(e) => { setName(e.target.value); }}
+        />
+        <input
+          className='w-full bg-gray-100 border-2 border-gray-300 rounded-lg p-3 placeholder-gray-500'
+          placeholder='Enter Email'
+          type="text"
+          value={email}
+          onChange={(e) => { setEmail(e.target.value); }}
+        />
+        <input
+          className='w-full bg-gray-100 border-2 border-gray-300 rounded-lg p-3 placeholder-gray-500'
+          placeholder='Enter Phone Number'
+          type="text"
+          value={phone}
+          onChange={(e) => { setPhone(e.target.value); }}
+        />
 
-        {/* designation dropdown */}
-
-
-        <label htmlFor="">Designation</label>
-        <select name="gender" value={designation} onChange={(e) => setDesignation(e.target.value)} className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline">
+        {/* Designation Dropdown */}
+        <label className='block text-gray-700 mb-1'>Designation</label>
+        <select
+          name="designation"
+          value={designation}
+          onChange={(e) => setDesignation(e.target.value)}
+          className="block w-full bg-gray-100 border-2 border-gray-300 rounded-lg p-3 mb-4"
+        >
+          <option value="">Select Designation</option>
           <option value="HR">HR</option>
           <option value="Manager">Manager</option>
           <option value="Sales">Sales</option>
         </select>
 
+        {/* Gender Radio Button */}
+        <label className='block text-gray-700 mb-1'>Gender:</label>
+        <div className='flex mb-4'>
+          <label className='mr-4'>
+            <input
+              type="radio"
+              name="gender"
+              value="Male"
+              checked={gender === 'Male'}
+              onChange={(e) => setGender(e.target.value)}
+            />
+            Male
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="gender"
+              value="Female"
+              checked={gender === 'Female'}
+              onChange={(e) => setGender(e.target.value)}
+            />
+            Female
+          </label>
+        </div>
 
-        {/* Gender radio button */}
+        {/* Courses Checkboxes */}
+        <label className='block text-gray-700 mb-1'>Course:</label>
+        <div className='flex flex-col mb-4'>
+          {['MCA', 'BCA', 'BSC'].map((courseItem) => (
+            <label key={courseItem} className='flex items-center'>
+              <input
+                type="checkbox"
+                value={courseItem}
+                checked={courses.includes(courseItem)}
+                onChange={handleCheckboxChange}
+                className='mr-2'
+              />
+              {courseItem}
+            </label>
+          ))}
+        </div>
 
-        <label htmlFor="">Gender : </label><br />
-        <input type="radio" id="male" name="gender" value="Male" checked={gender == 'Male'} onChange={(e) => setGender(e.target.value)} />
-        <label htmlFor="male"> Male </label>
-        <input type="radio" id="female" name="gender" value="Female" checked={gender == 'Female'} onChange={(e) => setGender(e.target.value)} />
-        <label htmlFor="female"> Female </label><br />
+        {/* File Upload */}
+        <label className='block text-gray-700 mb-1'>Upload your photo</label>
+        <input
+          accept="image/jpeg, image/png"
+          type="file"
+          onChange={(e) => { setImage(e.target.files[0]); }}
+          className='w-full border-2 border-gray-300 rounded-lg p-2 mb-4'
+        />
 
-        {/* Courses check boxes */}
-
-        <label>Course :</label><br />
-        <input type="checkbox" id="MCA" name="course" value="MCA" checked={courses.includes('MCA')} onChange={handleCheckboxChange} />
-        <label htmlFor="MCA"> MCA </label>
-        <input type="checkbox" id="BCA" name="course" value="BCA" checked={courses.includes('BCA')} onChange={handleCheckboxChange} />
-        <label htmlFor="BCA"> BCA </label>
-        <input type="checkbox" id="BSC" name="course" value="BSC" checked={courses.includes('BSC')} onChange={handleCheckboxChange} />
-        <label htmlFor="BSC"> BSC </label>
-
-
-        <label htmlFor="">Upload your photo</label><br />
-        <input className="" type="file" name='image' onChange={(e) => { setImage(e.target.files[0]) }} /><br />
-        <button className='bg-red-300 ml-5 rounded-lg p-1' onClick={formHandle}> Update Changes</button>
-      </div>
-
+        <button
+          type='submit'
+          className='w-full bg-blue-600 text-white rounded-lg p-3 hover:bg-blue-500 transition duration-200'
+        >
+          Update Changes
+        </button>
+      </form>
     </div>
-  )
+  );
 }
 
-export default EditEmployee
+export default EditEmployee;
